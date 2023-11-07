@@ -19,3 +19,5 @@ export PYTHONPATH=$PYTHONPATH:$PWD  # so we can import modules from our scripts
 * Product Design (What and why?): https://madewithml.com/courses/mlops/product-design/
 * System Design (How?): https://madewithml.com/courses/mlops/systems-design/
 
+Address data imbalance: There are many strategies, including over-sampling less frequent classes and under-sampling popular classes, class weights in the loss function, etc.
+
