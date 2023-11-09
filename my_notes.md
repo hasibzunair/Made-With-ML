@@ -21,6 +21,8 @@ export PYTHONPATH=$PYTHONPATH:$PWD  # so we can import modules from our scripts
 
 Address data imbalance: There are many strategies, including over-sampling less frequent classes and under-sampling popular classes, class weights in the loss function, etc.
 
+## Model
+
 **Model optimization after training** :
 
 **Pruning**: remove weights (unstructured) or entire channels (structured) to reduce the size of the network. The objective is to preserve the model’s performance while increasing its sparsity.
@@ -64,5 +66,46 @@ While capability (ex. loss) and alignment (ex. accuracy) metrics may seem to be 
 * ↑ accuracy, ↑ loss = large errors on some data (incorrect predictions have very skewed distributions)
 * ↑ accuracy, ↓ loss = no/few errors on some data (best case)*
 
-
 **Model serving**:
+
+There are many frameworks to choose from when it comes to model serving, such as Ray Serve, Nvidia Triton, HuggingFace, Bento ML, etc.
+
+Types: batch inference (offline) and online inference (real-time)
+
+## Developing
+
+Move from notebooks to scripts.
+
+Execute scripts from terminal.
+
+Note: Place the main function call under a `if __name__ == "__main__"` conditional so that it's only executed when we run the script directly. Here we can pass in the input arguments directly into the function in the code.
+
+```python
+# madewithml/train.py
+if __name__ == "__main__":
+    train_model(experiment_name="llm", ...)
+```
+
+```bash
+python madewithml/train.py
+```
+
+Use argparse:
+
+```python
+# madewithml/serve.py
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--run_id", help="run ID to use for serving.")
+    parser.add_argument("--threshold", type=float, default=0.9, help="threshold for `other` class.")
+    args = parser.parse_args()
+    ray.init()
+    serve.run(ModelDeployment.bind(run_id=args.run_id, threshold=args.threshold))
+```
+
+```bash
+python madewithml/serve.py --run_id $RUN_ID
+```
+
+Typer: https://typer.tiangolo.com/
+
