@@ -109,3 +109,142 @@ python madewithml/serve.py --run_id $RUN_ID
 
 Typer: https://typer.tiangolo.com/
 
+## Utilities
+
+Logging: see below.
+
+```python
+import logging
+import sys
+
+# Create super basic logger
+logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
+
+# Logging levels (from lowest to highest priority)
+logging.debug("Used for debugging your code.")
+logging.info("Informative messages from your code.")
+logging.warning("Everything works but there is something to be aware of.")
+logging.error("There's been a mistake with the process.")
+logging.critical("There is something terribly wrong and process may terminate.")
+```
+
+Create documentations: https://madewithml.com/courses/mlops/documentation/
+
+Style and format code: see below.
+
+- Black: an in-place reformatter that (mostly) adheres to PEP8
+- isort: sorts and formats import statements inside Python scripts.
+- flake8: a code linter with stylistic conventions that adhere to PEP8.
+
+Clean way to do it is using .toml file.
+
+```toml
+# pyproject.toml
+
+# Black formatting
+[tool.black]
+line-length = 150
+include = '\.pyi?$'
+exclude = '''
+/(
+      .eggs         # exclude a few common directories in the
+    | .git          # root of the project
+    | .hg
+    | .mypy_cache
+    | .tox
+    | venv
+    | _build
+    | buck-out
+    | build
+    | dist
+  )/
+'''
+
+# iSort
+[tool.isort]
+profile = "black"
+line_length = 79
+multi_line_output = 3
+include_trailing_comma = true
+virtual_env = "venv"
+
+[tool.flake8]
+exclude = "venv"
+ignore = ["E501", "W503", "E226", "E266"]
+# E501: Line too long
+# W503: Line break occurred before binary operator
+# E226: Missing white space around arithmetic operator
+# E266: Too many leading '#' for block comment
+
+[tool.pyupgrade]
+py39plus = true
+
+# Pytest
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = "test_*.py"
+
+# Pytest cov
+[tool.coverage.run]
+omit=["madewithml/evaluate.py", "madewithml/serve.py"]
+```
+
+To use it, run:
+
+```bash
+black .
+flake8
+isort .
+```
+
+```
+# Makefile
+SHELL = /bin/bash
+
+# Styling
+.PHONY: style
+style:
+    black .
+    flake8
+    python3 -m isort .
+    pyupgrade
+
+# Cleaning
+.PHONY: clean
+clean: style
+    find . -type f -name "*.DS_Store" -ls -delete
+    find . | grep -E "(__pycache__|\.pyc|\.pyo)" | xargs rm -rf
+    find . | grep -E ".pytest_cache" | xargs rm -rf
+    find . | grep -E ".ipynb_checkpoints" | xargs rm -rf
+    rm -rf .coverage*
+```
+
+Pre-commit hooks: https://madewithml.com/courses/mlops/pre-commit/
+
+```yaml
+# .pre-commit-config.yaml
+
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
+repos:
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+    -   id: trailing-whitespace
+    -   id: end-of-file-fixer
+    -   id: check-merge-conflict
+    -   id: check-yaml
+    -   id: check-added-large-files
+        args: ['--maxkb=1000']
+        exclude: "notebooks"
+    -   id: check-yaml
+        exclude: "mkdocs.yml"
+-   repo: local
+    hooks:
+    -   id: clean
+        name: clean
+        entry: make
+        args: ["clean"]
+        language: system
+        pass_filenames: false
+```
