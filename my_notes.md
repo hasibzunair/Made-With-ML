@@ -257,3 +257,27 @@ The framework to use when composing tests is the Arrange Act Assert methodology.
 - Act: apply the inputs on the component we want to test.
 - Assert: confirm that we received the expected output.
 
+### CI/CD for Machine Learning
+
+CI/CD workflows using GitHub Actions.
+
+### Monitoring Machine Learning Systems
+
+Need drift detection: https://madewithml.com/courses/mlops/monitoring/#drift
+
+Monitor: https://github.com/GokuMohandas/monitoring-ml
+
+#### Drift
+
+**Data drift**: Data drift, also known as feature drift or covariate shift, occurs when the distribution of the production data is different from the training data. The model is not equipped to deal with this drift in the feature space and so, it's predictions may not be reliable. The actual cause of drift can be attributed to natural changes in the real-world but also to systemic issues such as missing data, pipeline errors, schema changes, etc. It's important to inspect the drifted data and trace it back along it's pipeline to identify when and where the drift was introduced.
+
+**Target drift**: Besides just the input data changing, as with data drift, we can also experience drift in our outcomes. This can be a shift in the distributions but also the removal or addition of new classes with categorical tasks. Though retraining can mitigate the performance decay caused target drift, it can often be avoided with proper inter-pipeline communication about new classes, schema changes, etc.
+
+**Concept drift**: Besides the input and output data drifting, we can have the actual relationship between them drift as well. This concept drift renders our model ineffective because the patterns it learned to map between the original inputs and outputs are no longer relevant. Concept drift can be something that occurs in various patterns.
+
+#### Monitoring
+
+When it actually comes to implementing a monitoring system, we have several options, ranging from fully managed to from-scratch. Several popular managed solutions are Arize, Arthur, Fiddler, Gantry, Mona, WhyLabs, etc., all of which allow us to create custom monitoring views, trigger alerts, etc. There are even several great open-source solutions such as EvidentlyAI, TorchDrift, WhyLogs, etc.
+
+We'll often notice that monitoring solutions are offered as part of the larger deployment option such as Sagemaker, TensorFlow Extended (TFX), TorchServe, etc. And if we're already working with Kubernetes, we could use KNative or Kubeless for serverless workload management. But we could also use a higher level framework such as KFServing or Seldon core that natively use a serverless framework like KNative.
+
